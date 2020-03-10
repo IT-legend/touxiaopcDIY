@@ -6,32 +6,33 @@
       </bread-crumb>
       <!-- 页面结构，用el表单 -->
       <!-- 1-放置表单根容器 -->
-      <el-form label-width="120px" :model="formDate" :rules="rules" ref="myForm">
+      <el-form label-width="120px" :model="formData" :rules="rules" ref="myForm">
           <!-- 2-放置单个表单域 -->
-          <el-form-item label="用户名">
-              <el-input style="width:25%" v-model="formDate.name"></el-input>
-
+          <!-- 第一行 用户名 -->
+          <el-form-item label="用户名" prop="name">
+              <el-input style="width:25%" v-model="formData.name"></el-input>
           </el-form-item>
-          <el-form-item label="简介">
-              <el-input style="width:25%" v-model="formDate.intro"></el-input>
-
+          <!-- 第二行 用户简介 -->
+          <el-form-item label="用户简介">
+              <el-input style="width:25%" v-model="formData.intro"></el-input>
           </el-form-item>
-          <el-form-item label="用户邮箱">
-              <el-input style="width:25%" v-model="formDate.email"></el-input>
-
+          <!-- 第二行 用户邮箱 -->
+          <el-form-item label="用户邮箱" prop="email">
+              <el-input style="width:25%" v-model="formData.email"></el-input>
           </el-form-item>
+          <!-- 第四行 手机号 -->
           <el-form-item label="手机号">
               <!-- 能看不能改 -->
-              <el-input style="width:25%" disabled v-model="formDate.mobile"></el-input>
-
+              <el-input style="width:25%" disabled v-model="formData.mobile"></el-input>
           </el-form-item>
-          <el-form-item label="">
-              <el-button type="primary" @click='saveUser'>保存</el-button>
+          <!-- 第五行 保存按钮 -->
+          <el-form-item>
+            <el-button type="primary" @click='saveUser'>保存</el-button>
           </el-form-item>
       </el-form>
       <!-- 3-右侧头像 -->
-      <el-upload action :http-request="uploadImg" :show-file-list="none">
-      <img class='head' :src="formDate.photo ? formDate.photo : defaultImg" alt="">
+      <el-upload action :http-request="uploadImg"  :show-file-list="false">
+      <img class='head' :src="formData.photo ? formData.photo : defaultImg" alt="">
       </el-upload>
   </el-card>
 </template>
@@ -40,17 +41,20 @@
 export default {
   data () {
     return {
-      formDate: {
+      // 定义个人信息数据
+      formData: {
         name: '',
         intro: '',
         photo: '',
         email: '',
         mobile: ''
       },
+      // 定义默认图片
       defaultImg: require('../../assets/img/wushen3.png'),
+      // 定义校验规则
       rules: {
         name: [{ required: true, message: '用户名不能为空', trigger: 'blur' }, { min: 1, max: 7, message: '用户名的长度必须为1-7位', trigger: 'blur' }],
-        email: [{ required: true, message: '邮箱名不能为空', trigger: 'blur' }, { pattern: /^[a-z0-9A-Z]+[- | a-z0-9A-Z . _]+@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-z]{2,}$/, message: '邮箱格式不正确', trigger: 'blur' }]
+        email: [{ required: true, message: '邮箱名不能为空', trigger: 'blur' }, { pattern: /^([a-zA-Z]|[0-9])(\w|-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/, message: '邮箱格式不正确', trigger: 'blur' }]
       }
     }
   },
@@ -61,7 +65,7 @@ export default {
         url: '/user/profile'
       }).then(result => {
         //   将获取到的数据赋值给我们的表单数据
-        this.formDate = result.data
+        this.formData = result.data
       })
     },
     // 2-保存
@@ -72,7 +76,7 @@ export default {
         this.$axios({
           url: '/user/profile',
           method: 'patch',
-          data: this.formDate
+          data: this.formData
         }).then(() => {
           this.$message.success('保存成功')
         }).catch(() => {
@@ -82,18 +86,22 @@ export default {
     },
     // 3-上传头像
     uploadImg (params) {
+      // params.file就是我们上传文件传过来的文件数据
       const data = new FormData()
       data.append('photo', params.file)
       this.$axios({
         url: '/user/photo',
         method: 'patch',
-        data
+        data // 要传递的参数
       }).then(result => {
-        this.formDate.photo = result.data.photo
+        // 拿到数据赋值给我们的新地址
+        this.formData.photo = result.data.photo
+        // 但是头部组件的小头像没有更新，明天讲
       })
     }
   },
   created () {
+    // 调用获取用户数据的方法
     this.getUserInfo()
   }
 }
@@ -103,7 +111,7 @@ export default {
     .head {
         position: absolute;
         right: 300px;
-        top:200px;
+        top: 170px;
         width: 200px;
         height: 200px;
         border-radius: 50%;

@@ -19,7 +19,7 @@
       <el-tab-pane label="上传素材" name="upload">
         <!-- 放置上传组件 -->
         <!-- action必须给值，否则报错 -->
-        <el-upload action="" class="upload-icon" :http-request="uploadImg">
+        <el-upload action="" class="upload-icon" :http-request="uploadImg" :show-file-list="false">
           <!-- 放置元素用来点击上传 -->
           <!-- 完成上传素材之后，要把地址设置给封面 http-request-->
           <i class="el-icon-circle-plus-outline"></i>

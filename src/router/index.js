@@ -9,6 +9,10 @@ Vue.use(VueRouter)
 
 const routes = [
   {
+    path: '*', // 所有找不到家的孩子都来吧
+    component: () => import('@/views/404')
+  },
+  {
     path: '/',
     redirect: '/login'
   },
