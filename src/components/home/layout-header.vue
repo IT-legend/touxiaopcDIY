@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import eventBus from '@/utils/eventBus.js'
 export default {
   data () {
     return {
@@ -53,15 +54,25 @@ export default {
         // 2.跳转回登录页，用编程式导航
         this.$router.push('/login')
       }
+    },
+    getUserInfo () {
+      // 获取真实的个人信息
+      this.$axios({
+        url: '/user/profile' // 请求地址
+      }).then(res => {
+      // 如果加载成功，将数据赋值给userInfo
+        this.userInfo = res.data
+      })
     }
   },
   created () {
-    // 获取真实的个人信息
-    this.$axios({
-      url: '/user/profile' // 请求地址
-    }).then(res => {
-      // 如果加载成功，将数据赋值给userInfo
-      this.userInfo = res.data
+    // 正常加载
+    this.getUserInfo()
+    // 监听
+    eventBus.$on('updateUser', () => {
+      // 如果有人触发了事件，就会进来
+      // 重新获取信息
+      this.getUserInfo()
     })
   }
 }

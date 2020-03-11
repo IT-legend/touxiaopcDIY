@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import eventBus from '@/utils/eventBus.js'
 export default {
   data () {
     return {
@@ -79,6 +80,8 @@ export default {
           data: this.formData
         }).then(() => {
           this.$message.success('保存成功')
+          // 广播消息
+          eventBus.$emit('updateUser')
         }).catch(() => {
           this.$message.error('保存失败')
         })
@@ -97,6 +100,7 @@ export default {
         // 拿到数据赋值给我们的新地址
         this.formData.photo = result.data.photo
         // 但是头部组件的小头像没有更新，明天讲
+        eventBus.$emit('updateUser')
       })
     }
   },
