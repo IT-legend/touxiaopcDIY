@@ -94,33 +94,30 @@ export default {
   },
   methods: {
     //   1-定义获取频道数据方法
-    getChannels () {
-      this.$axios({
+    async getChannels () {
+      const result = await this.$axios({
         url: '/channels' // 地址
-      }).then(result => {
-        this.channels = result.data.channels
       })
+      this.channels = result.data.channels
     },
     // 2-定义发布校验方法
-    publish (draft) {
+    async publish (draft) {
     // 点击发布按钮会手动校验
-      this.$refs.myForm.validate().then(() => {
+      await this.$refs.myForm.validate()
+      try {
         const { articleId } = this.$route.params
         // 这样等于同时处理了四件事：发布正式文章、发布草稿文章、修改正式文章、修改草稿
-        this.$axios({
+        await this.$axios({
           // 根据场景决定用什么接口
           url: articleId ? `/articles/${articleId}` : '/articles',
           // 根据场景决定用什么类型
           method: articleId ? 'put' : 'post',
           params: { draft },
           data: this.publishForm
-        }).then(() => {
-          this.$message.success('操作成功')
-          //   如果发布成功，应当跳转到文章列表页
-          this.$router.push('/home/articles')
-        }).catch(() => {
-          this.$message.error('操作失败')
         })
+        this.$message.success('操作成功')
+        //   如果发布成功，应当跳转到文章列表页
+        this.$router.push('/home/articles')
 
         // if (articleId) {
         //   // 进入这里是修改
@@ -152,16 +149,17 @@ export default {
         //     this.$message.error('发布失败')
         //   })
         // }
-      })
+      } catch (error) {
+        this.$message.error('操作失败')
+      }
     },
     // 3-根据id获取文章详情
-    getArticleById (id) {
-      this.$axios({
+    async getArticleById (id) {
+      const result = await this.$axios({
         url: `/articles/${id}` // 请求地址
-      }).then(result => {
-        // 将获取到的数据直接赋值给我们的表单数据
-        this.publishForm = result.data
       })
+      // 将获取到的数据直接赋值给我们的表单数据
+      this.publishForm = result.data
     },
     // 4-定义单选框图片类型发生变化的监听方法
     changeType () {

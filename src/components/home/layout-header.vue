@@ -67,14 +67,13 @@ export default {
         this.$router.push('/login')
       }
     },
-    getUserInfo () {
+    async getUserInfo () {
       // 获取真实的个人信息
-      this.$axios({
+      const res = await this.$axios({
         url: '/user/profile' // 请求地址
-      }).then(res => {
-      // 如果加载成功，将数据赋值给userInfo
-        this.userInfo = res.data
       })
+      // 如果加载成功，将数据赋值给userInfo
+      this.userInfo = res.data
     }
   },
   created () {

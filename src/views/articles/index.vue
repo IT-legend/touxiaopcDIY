@@ -121,24 +121,22 @@ export default {
   },
   methods: {
     //   1-定义方法来获取频道数据
-    getChannels () {
-      this.$axios({
+    async getChannels () {
+      const result = await this.$axios({
         url: '/channels' // 地址
-      }).then(result => {
-        //   获取频道接口返回的数据，赋值给我们的数据数组
-        this.channels = result.data.channels
       })
+      //   获取频道接口返回的数据，赋值给我们的数据数组
+      this.channels = result.data.channels
     },
     // 2-定义获取文章列表方法
-    getArticles (params) {
-      this.$axios({
+    async getArticles (params) {
+      const result = await this.$axios({
         url: '/articles', // 请求地址
         params // ES6简写
-      }).then(result => {
-        this.list = result.data.results // 赋值文章列表给本地数据
-        // 将数据总条数赋值给我们的total总条数
-        this.page.total = result.data.total_count
       })
+      this.list = result.data.results // 赋值文章列表给本地数据
+      // 将数据总条数赋值给我们的total总条数
+      this.page.total = result.data.total_count
     },
     // 3-定义方法监听顶部三个选择组件的变化
     changeCondition () {
@@ -163,22 +161,22 @@ export default {
       this.changeCondition()
     },
     // 5-定义删除文章方法
-    delMaterial (id) {
+    async delMaterial (id) {
       // 先提示一下
-      this.$confirm('Are you sure?', '提示信息').then(() => {
+      await this.$confirm('Are you sure?', '提示信息')
+      try {
         //   点击了确定删除，开始调接口删除数据
-        this.$axios({
+        await this.$axios({
           method: 'delete',
           url: `/articles/${id}` // 地址
-        }).then(() => {
-          // 删除成功，重新拉取数据
+        })
+        // 删除成功，重新拉取数据
         //   这里需要带着条件来加载页面
         //   this.getArticles()
-          this.changeCondition()
-        }).catch(() => {
-          this.$message.error('删除失败')
-        })
-      })
+        this.changeCondition()
+      } catch (error) {
+        this.$message.error('删除失败')
+      }
     }
     // 6-定义修改文章方法 这里我们直接在行内定义了跳转
     // toPublish () {

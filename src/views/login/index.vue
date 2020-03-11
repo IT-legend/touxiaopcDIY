@@ -71,7 +71,7 @@ export default {
     }
   },
   methods: {
-    login () {
+    async login () {
       // 这里可以通过ref获取form的对象实例，直接调用上面的validate方法即可校验整个表单
       // 方法一：回调函数校验，利用isOK参数
       // this.$refs.loginForm.validate(function (isOK) {
@@ -82,26 +82,26 @@ export default {
       //   }
       // })
       // 方法二：promise校验
-      this.$refs.loginForm.validate().then(() => {
+      await this.$refs.loginForm.validate()
+      try {
         // console.log('校验通过')
-        this.$axios({
+        const res = await this.$axios({
           url: '/authorizations', // 请求地址
           data: this.loginForm, // 请求数据
           method: 'post' // 请求方式
-        }).then(res => {
-          // 请求成功
-          window.localStorage.setItem('user-token', res.data.token) // 拿到token并存入本地缓存
-          // 请求成功直接跳转到主页，这里我们用编程式导航进行跳转
-          // console.log(123)
-          this.$router.push('/home')
-        }).catch(() => {
-          // 请求失败，应该提示消息
-          // 方法一：
-          // this.$message({ message: '用户名或密码错误', type: 'error' })
-          // 方法二：
-          this.$message.error('用户名或者密码错误')
         })
-      })
+        // 请求成功
+        window.localStorage.setItem('user-token', res.data.token) // 拿到token并存入本地缓存
+        // 请求成功直接跳转到主页，这里我们用编程式导航进行跳转
+        // console.log(123)
+        this.$router.push('/home')
+      } catch (error) {
+        // 请求失败，应该提示消息
+        // 方法一：
+        // this.$message({ message: '用户名或密码错误', type: 'error' })
+        // 方法二：
+        this.$message.error('用户名或者密码错误')
+      }
     }
   }
 }

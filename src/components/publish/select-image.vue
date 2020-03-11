@@ -43,19 +43,18 @@ export default {
   },
   methods: {
     //   1-定义方法来获取全部素材
-    getAllImg () {
-      this.$axios({
+    async getAllImg () {
+      const result = await this.$axios({
         url: '/user/images', // 获取全部素材接口
         params: {
           collect: false, // 是否收藏，这里是查询全部素材
           page: this.page.currentPage, // 查询当前页码
           per_page: this.page.pageSize
         }
-      }).then(result => {
-        //   获取到全部素材的数据，并赋值给我们的list
-        this.list = result.data.results
-        this.page.total = result.data.total_count
       })
+      //   获取到全部素材的数据，并赋值给我们的list
+      this.list = result.data.results
+      this.page.total = result.data.total_count
     },
     changPage (newPage) {
       // 赋值新页码
@@ -68,25 +67,26 @@ export default {
       this.$emit('selectOneImg', url) // 将url参数传出去
     },
 
-    uploadImg (params) {
+    async uploadImg (params) {
       // 调用上传接口
       // params.file就是我要上传的文件
       // 接口参数类型是formDate
-      const data = new FormData() // 实例化对象
-      data.append('image', params.file)
-      //   开始发送请求
-      this.$axios({
-        url: '/user/images',
-        method: 'post', // 上传新增都是post
-        data // ES6简写
-      }).then(result => {
+      try {
+        const data = new FormData() // 实例化对象
+        data.append('image', params.file)
+        //   开始发送请求
+        const result = await this.$axios({
+          url: '/user/images',
+          method: 'post', // 上传新增都是post
+          data // ES6简写
+        })
         //   成功后，接口会返回上传成功的图片地址
         this.$emit('selectOneImg', result.data.url) // 将url参数传出去
         // this.getMaterial()
-      }).catch(() => {
+      } catch (error) {
         //   失败弹出提示信息
         this.$message.error('上传文件失败')
-      })
+      }
     }
   },
   created () {

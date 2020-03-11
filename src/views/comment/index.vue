@@ -62,10 +62,10 @@ export default {
       this.getComment()
     },
     //   获取评论数据
-    getComment () {
+    async getComment () {
       // 获取之前加载遮罩层
       this.loading = true
-      this.$axios({
+      const res = await this.$axios({
         url: '/articles', // 请求地址
         params: {
           response_type: 'comment',
@@ -73,14 +73,13 @@ export default {
           page: this.page.currentPage, // 查第一页
           per_page: this.page.pageSize // 查10条
         }
-      }).then(res => {
-        // 将返回结果中的数组给list
-        this.list = res.data.results
-        // 在获取完数据之后，将总数赋值给total
-        this.page.total = res.data.total_count // 将评论总数赋值
-        // 请求完毕关闭遮罩层
-        this.loading = false
       })
+      // 将返回结果中的数组给list
+      this.list = res.data.results
+      // 在获取完数据之后，将总数赋值给total
+      this.page.total = res.data.total_count // 将评论总数赋值
+      // 请求完毕关闭遮罩层
+      this.loading = false
     },
     formatterBool (row, column, cellValue, index) {
       // row表示当前一行数据
@@ -90,11 +89,12 @@ export default {
       return cellValue ? '打开' : '关闭'
     },
     // 定义修改评论状态方法
-    openOrClose (row) {
+    async openOrClose (row) {
       const mess = row.comment_status ? '关闭' : '打开'
-      this.$confirm(`是否确定${mess}评论`, '提示信息').then(() => {
+      await this.$confirm(`是否确定${mess}评论`, '提示信息')
+      try {
         // 成功之后，调接口
-        this.$axios({
+        await this.$axios({
           url: './comments/status', // 请求地址
           method: 'put', // 请求类型
           params: {
@@ -104,16 +104,15 @@ export default {
             // 提示信息：是打开还是关闭，和评论状态相反
             allow_comment: !row.comment_status
           }
-        }).then(() => {
-          // 代表成功
-          this.$message.success(`${mess}评论成功`)
-          // 重新拉取数据
-          this.getComment()
-        }).catch(() => {
-          // 代表失败
-          this.$message.error(`${mess}评论失败`)
         })
-      })
+        // 代表成功
+        this.$message.success(`${mess}评论成功`)
+        // 重新拉取数据
+        this.getComment()
+      } catch (error) {
+        // 代表失败
+        this.$message.error(`${mess}评论失败`)
+      }
     }
 
   },

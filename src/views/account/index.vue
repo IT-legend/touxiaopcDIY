@@ -61,47 +61,45 @@ export default {
   },
   methods: {
     //   1-获取用户个人资料
-    getUserInfo () {
-      this.$axios({
+    async getUserInfo () {
+      const result = await this.$axios({
         url: '/user/profile'
-      }).then(result => {
-        //   将获取到的数据赋值给我们的表单数据
-        this.formData = result.data
       })
+      //   将获取到的数据赋值给我们的表单数据
+      this.formData = result.data
     },
     // 2-保存
-    saveUser () {
+    async saveUser () {
       // 手动校验
-      this.$refs.myForm.validate().then(() => {
+      await this.$refs.myForm.validate()
+      try {
         // 校验成功
-        this.$axios({
+        await this.$axios({
           url: '/user/profile',
           method: 'patch',
           data: this.formData
-        }).then(() => {
-          this.$message.success('保存成功')
-          // 广播消息
-          eventBus.$emit('updateUser')
-        }).catch(() => {
-          this.$message.error('保存失败')
         })
-      })
+        this.$message.success('保存成功')
+        // 广播消息
+        eventBus.$emit('updateUser')
+      } catch (error) {
+        this.$message.error('保存失败')
+      }
     },
     // 3-上传头像
-    uploadImg (params) {
+    async uploadImg (params) {
       // params.file就是我们上传文件传过来的文件数据
       const data = new FormData()
       data.append('photo', params.file)
-      this.$axios({
+      const result = await this.$axios({
         url: '/user/photo',
         method: 'patch',
         data // 要传递的参数
-      }).then(result => {
-        // 拿到数据赋值给我们的新地址
-        this.formData.photo = result.data.photo
-        // 但是头部组件的小头像没有更新，明天讲
-        eventBus.$emit('updateUser')
       })
+      // 拿到数据赋值给我们的新地址
+      this.formData.photo = result.data.photo
+      // 但是头部组件的小头像没有更新，明天讲
+      eventBus.$emit('updateUser')
     }
   },
   created () {
