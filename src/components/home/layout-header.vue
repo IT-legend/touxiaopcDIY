@@ -4,7 +4,10 @@
         <!-- 分两列 -->
         <!-- 左侧列 -->
         <el-col class='left' :span='12'>
-            <i class="el-icon-sunny" ></i>
+          <!-- 点击太阳图标对左侧导航栏进行宽度控制 -->
+          <!-- 此处的class图标应改为动态的 -->
+          <!-- :class="{ class名称 : 布尔值 , class名称 : 布尔值 }" -->
+            <i :class="{'el-icon-sunny' : !collapse, 'el-icon-moon': collapse }" @click="collapse=!collapse"></i>
             <span style="color:#fff;margin-left:8px">My Queen</span>
         </el-col>
         <!-- 右侧列 -->
@@ -30,13 +33,22 @@
 </template>
 
 <script>
+// 公共领域监听
 import eventBus from '@/utils/eventBus.js'
 export default {
   data () {
     return {
-      userInfo: {
-        // 接收个人信息
-      }
+      userInfo: {}, // 接收个人信息
+      collapse: false
+
+    }
+  },
+  // 监听data数据变化
+  watch: {
+    collapse () {
+      // alert(1)
+      // 数据变了
+      eventBus.$emit('changeCollapse') // 触发改变折叠状态的事件
     }
   },
   methods: {

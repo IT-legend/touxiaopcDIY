@@ -33,6 +33,8 @@
 </template>
 
 <script>
+// 引入图表模块
+// import ECharts from 'echarts'
 export default {
   data () {
     return {

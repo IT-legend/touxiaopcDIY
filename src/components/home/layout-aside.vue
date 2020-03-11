@@ -1,12 +1,13 @@
 <template>
   <div class="layout-aside">
       <div class=title>
-          <img src="../../assets/img/logo_admin.png" alt="">
+          <!-- 这里需要把图片换成动态的 -->
+          <img :src="collapse ? smallImg : bigImg" alt="">
       </div>
       <!-- 导航菜单 -->
       <!-- 导航菜单开启路由模式 -->
       <!-- 开启路由模式之后，需要在每一个菜单上配置index属性，index属性就是在路由模式下设置跳转路径 -->
-      <el-menu router background-color="rgba(0, 0, 0, 0)" text-color="#fff" active-text-color="#99CCFF">
+      <el-menu router background-color="rgba(0, 0, 0, 0)" text-color="#fff" active-text-color="#99CCFF" :collapse='collapse'>
           <!-- 子菜单 分固定的和可下拉的-->
         <el-menu-item index='/home'>
             <i class="el-icon-s-home" style="color:#fff"></i>
@@ -45,14 +46,20 @@
 
 <script>
 export default {
-
+  props: ['collapse'], // 接收父组件传出来的变量
+  data () {
+    return {
+      bigImg: require('../../assets/img/logo_admin.png'),
+      smallImg: require('../../assets/img/toutiao.png')
+    }
+  }
 }
 </script>
 
 <style lang='less' scoped>
     .layout-aside {
         height: 100vh;
-        width: 230px;
+        // width: 230px;
         .title {
             text-align: center;
             padding: 10px 0;

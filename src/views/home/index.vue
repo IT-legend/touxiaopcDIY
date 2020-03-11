@@ -2,8 +2,9 @@
     <!-- 1.设置外层父容器，总容器 -->
     <el-container>
       <!-- 2.设置左侧边栏容器 -->
-      <el-aside class="aside" style="width:230px;">
-        <layout-aside></layout-aside>
+      <el-aside class="aside" :style="{width:collapse ? '64px' : '230px'}">
+        <!-- 直接把父组件的状态传给子组件 -->
+        <layout-aside :collapse='collapse'></layout-aside>
       </el-aside>
       <!-- 3.右侧也采用父容器包裹方式 -->
       <el-container>
@@ -27,9 +28,19 @@
 </template>
 
 <script>
-
+import eventBus from '@/utils/eventBus'
 export default {
-
+  data () {
+    return {
+      collapse: false // 默认展开
+    }
+  },
+  created () {
+    eventBus.$on('changeCollapse', () => {
+      // 此时状态变了
+      this.collapse = !this.collapse // 只要取反就和头部组件对上了
+    })
+  }
 }
 </script>
 
